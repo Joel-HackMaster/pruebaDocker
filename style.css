@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&family=League+Spartan:wght@200;700&family=Lexend+Deca&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    /* === Colors === */
+    --fondo-color: #685bf3;
+    --body-color: #E4E9F7;
+    --texto-color: #DDD;
+    --parrafo-color: #707070;
+
+    /* === Transition === */
+    --tran-03: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+
+}
+
+body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+input{
+    display: inline-flex;
+    border: 0;
+    height: 150px;
+    width: 60px;
+    border-radius: 10px 0 0 10px;
+    background-color: var(--fondo-color);
+    
+}
+
+header{
+    display: inline-flex;
+    background-color: transparent;
+    height: 150px;
+    width: 65%;
+}
+
+.parrafo{
+    border-radius: 0 10px 10px 0;
+    background-color: var(--body-color);
+    text-decoration: none;
+    font-size: 90px;
+    text-align: center;
+    color: var(--parrafo-color);
+    transition: var(--tran-05);
+}
+
+.cerrar{
+    opacity: 0;
+}
+
+@media screen and (max-width: 798px) and (orientation: landscape) {
+    header{
+        position: relative;
+        left: 150px;
+        height: 60px;
+    }
+
+    .parrafo{
+        color: red;
+        font-size: 40px;
+        overflow: scroll;
+        background-color: gray;
+    }
+
+    input{
+        position: relative;
+        left: 150px;
+        border: 0;
+        height: 60px;
+        width: 60px;
+        border-radius: 10px 0 0 10px;
+        background-color: var(--fondo-color);
+    }
+}
+
+@media screen and (orientation: portrait) {
+    header{
+        position: relative;
+        top: 300px;
+        height: 60px;
+    }
+
+    .parrafo{
+        color: blue;
+        font-size: 40px;
+        overflow: scroll;
+        background-color: gray;
+    }
+
+    input{
+        position: relative;
+        top: 300px;
+        border: 0;
+        height: 60px;
+        width: 60px;
+        border-radius: 10px 0 0 10px;
+        background-color: var(--fondo-color);
+    }
+}
+
+@media print {
+    header{
+        align-items: center;
+        position: relative;
+        transform: rotate(45deg);
+        bottom: 200px;
+    }
+
+    input{
+        width: 0;
+    }
+}
