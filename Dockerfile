@@ -1,65 +1,35 @@
-<html>
-<head>
-<title>Sistema de números aleatorios</title>
-</head>
-<body>
-<h1>Sistema de números aleatorios</h1>
-<p>Ingresa un número de registro y presiona el botón para generar un número al azar entre 1 y 1000 y mostrar su información.</p>
-<form method="post">
-<input type="submit" value="Generar">
-</form>
+# Use the official PHP image.
+# https://hub.docker.com/_/php
+FROM php:8.0-apache
 
-<?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $numero = random_int(1, 1000);
-    
-}
+# Configure PHP for Cloud Run.
+# Precompile PHP code with opcache.
+RUN docker-php-ext-install -j "$(nproc)" opcache
+RUN set -ex; \
+  { \
+    echo "; Cloud Run enforces memory & timeouts"; \
+    echo "memory_limit = -1"; \
+    echo "max_execution_time = 0"; \
+    echo "; File upload at Cloud Run network limit"; \
+    echo "upload_max_filesize = 32M"; \
+    echo "post_max_size = 32M"; \
+    echo "; Configure Opcache for Containers"; \
+    echo "opcache.enable = On"; \
+    echo "opcache.validate_timestamps = Off"; \
+    echo "; Configure Opcache Memory (Application-specific)"; \
+    echo "opcache.memory_consumption = 32"; \
+  } > "$PHP_INI_DIR/conf.d/cloud-run.ini"
 
-if ($numero % 2 == 0) {
-  $divisible_por_2 = "SI";
-} else {
-  $divisible_por_2 = "NO";
-}
+# Copy in custom code from the host machine.
+WORKDIR /var/www/html
+COPY . ./
 
-if ($numero % 3 == 0) {
-  $divisible_por_3 = "SI";
-} else {
-  $divisible_por_3 = "NO";
-}
+# Use the PORT environment variable in Apache configuration files.
+# https://cloud.google.com/run/docs/reference/container-contract#port
+RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
-function sumar_digitos($numero) {
-  $suma = 0;
-  $cadena = strval($numero);
-  for ($i = 0; $i < strlen($cadena); $i++) {
-    $digito = intval($cadena[$i]);
-    $suma += $digito;
-  }
-  return $suma;
-}
-
-$suma_digitos = sumar_digitos($numero);
-
-$cantidad_digitos = strlen(strval($numero));
-
-echo "<table border=\"1\">";
-echo "<tr>";
-echo "<th>N°</th>";
-echo "<th>NÚMERO</th>";
-echo "<th>DIVISIBLE POR 2</th>";
-echo "<th>DIVISIBLE POR 3</th>";
-echo "<th>SUMA DE DÍGITOS</th>";
-echo "<th>CANTIDAD DE DÍGITOS</th>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>"."1"."</td>";
-echo "<td>".$numero."</td>";
-echo "<td>".$divisible_por_2."</td>";
-echo "<td>".$divisible_por_3."</td>";
-echo "<td>".$suma_digitos."</td>";
-echo "<td>".$cantidad_digitos."</td>";
-echo "</tr>";
-echo "</table>";
-echo "<h1 style='color: Red; text_alight: center;'>Profesor este taller y el avance lo realice solo FFF por mis compañeros.</h1>";
-?>
-</body>
-</html>
+# Configure PHP for development.
+# Switch to the production php.ini for production operations.
+# RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# https://github.com/docker-library/docs/blob/master/php/README.md#configuration
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
